@@ -1,5 +1,5 @@
 // src/components/Home.js
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 import debounce from 'lodash/debounce';
 
@@ -12,10 +12,11 @@ function Home() {
   const [pendingRequests, setPendingRequests] = useState([]);
   const [notifications, setNotifications] = useState({ message: '', type: '' });
 
+  // Fetch functions wrapped with useCallback for memoization
   const fetchFriends = useCallback(async () => {
     try {
-      const response = await fetch(`https://make-friends-backend.onrender.com/friends`, {
-        headers: { Authorization: `Bearer ${token}` }
+      const response = await fetch('https://make-friends-backend.onrender.com/friends', {
+        headers: { Authorization: `Bearer ${token}` },
       });
       const data = await response.json();
       setFriends(data);
@@ -26,8 +27,8 @@ function Home() {
 
   const fetchRecommendations = useCallback(async () => {
     try {
-      const response = await fetch(`https://make-friends-backend.onrender.com/friends/recommendations`, {
-        headers: { Authorization: `Bearer ${token}` }
+      const response = await fetch('https://make-friends-backend.onrender.com/friends/recommendations', {
+        headers: { Authorization: `Bearer ${token}` },
       });
       const data = await response.json();
       setRecommendations(data);
@@ -38,8 +39,8 @@ function Home() {
 
   const fetchPendingRequests = useCallback(async () => {
     try {
-      const response = await fetch(`https://make-friends-backend.onrender.com/friends/pending`, {
-        headers: { Authorization: `Bearer ${token}` }
+      const response = await fetch('https://make-friends-backend.onrender.com/friends/pending', {
+        headers: { Authorization: `Bearer ${token}` },
       });
       const data = await response.json();
       setPendingRequests(data);
@@ -48,36 +49,33 @@ function Home() {
     }
   }, [token]);
 
+  // Fetch all data on mount
   useEffect(() => {
-    fetchFriends();
-    fetchRecommendations();
-    fetchPendingRequests();
+    const fetchAllData = async () => {
+      await fetchFriends();
+      await fetchRecommendations();
+      await fetchPendingRequests();
+    };
+    fetchAllData();
   }, [fetchFriends, fetchRecommendations, fetchPendingRequests]);
 
-  // const handleSearch = async () => {
-  //   try {
-  //     const response = await fetch(`https://make-friends-backend.onrender.com/friends/search?username=${searchTerm}`, {
-  //       headers: { Authorization: `Bearer ${token}` }
-  //     });
-  //     const data = await response.json();
-  //     setSearchResults(data);
-  //   } catch (error) {
-  //     console.error('Error searching users:', error);
-  //   }
-  // };
-
-  const debouncedSearch = useCallback(
-    debounce(async (term) => {
-      try {
-        const response = await fetch(`https://make-friends-backend.onrender.com/friends/search?username=${term}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        const data = await response.json();
-        setSearchResults(data);
-      } catch (error) {
-        console.error('Error searching users:', error);
-      }
-    }, 300),
+  // Debounced search logic
+  const debouncedSearch = useMemo(
+    () =>
+      debounce(async (term) => {
+        try {
+          const response = await fetch(
+            `https://make-friends-backend.onrender.com/friends/search?username=${term}`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+          const data = await response.json();
+          setSearchResults(data);
+        } catch (error) {
+          console.error('Error searching users:', error);
+        }
+      }, 300),
     [token]
   );
 
@@ -91,36 +89,33 @@ function Home() {
     }
   };
 
+  // Friend request actions
   const sendFriendRequest = async (userId) => {
     try {
-      const response = await fetch(`https://make-friends-backend.onrender.com/friends/request/${userId}`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await fetch(
+        `https://make-friends-backend.onrender.com/friends/request/${userId}`,
+        {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       const data = await response.json();
-      
       setNotifications({
         message: data.message,
-        type: data.status === 'requested' ? 'success' : 'info'
+        type: data.status === 'requested' ? 'success' : 'info',
       });
-
       // Update UI
-      setSearchResults(prevResults =>
-        prevResults.map(user =>
+      setSearchResults((prevResults) =>
+        prevResults.map((user) =>
           user._id === userId
             ? { ...user, requestStatus: data.status === 'requested' ? 'requested' : 'none' }
             : user
         )
       );
-
-      // Refresh recommendations if needed
-      fetchRecommendations();
+      fetchRecommendations(); // Refresh recommendations if needed
     } catch (error) {
       console.error('Error managing friend request:', error);
-      setNotifications({
-        message: 'Error managing friend request',
-        type: 'error'
-      });
+      setNotifications({ message: 'Error managing friend request', type: 'error' });
     }
   };
 
@@ -128,7 +123,7 @@ function Home() {
     try {
       await fetch(`https://make-friends-backend.onrender.com/friends/accept/${userId}`, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
       fetchPendingRequests();
       fetchFriends();
@@ -141,7 +136,7 @@ function Home() {
     try {
       await fetch(`https://make-friends-backend.onrender.com/friends/unfriend/${userId}`, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
       fetchFriends();
     } catch (error) {
