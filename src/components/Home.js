@@ -12,27 +12,21 @@ function Home() {
   const [pendingRequests, setPendingRequests] = useState([]);
   const [notifications, setNotifications] = useState({ message: '', type: '' });
 
-  useEffect(() => {
-    fetchFriends();
-    fetchRecommendations();
-    fetchPendingRequests();
-  }, []);
-
-  const fetchFriends = async () => {
+  const fetchFriends = useCallback(async () => {
     try {
-      const response = await fetch('https://make-friends-backend.onrender.com/friends', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/friends`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await response.json();
       setFriends(data);
     } catch (error) {
-        console.error('Error fetching friends:', error);
+      console.error('Error fetching friends:', error);
     }
-  };
+  }, [token]);
 
-  const fetchRecommendations = async () => {
+  const fetchRecommendations = useCallback(async () => {
     try {
-      const response = await fetch('https://make-friends-backend.onrender.com/friends/recommendations', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/friends/recommendations`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await response.json();
@@ -40,11 +34,11 @@ function Home() {
     } catch (error) {
       console.error('Error fetching recommendations:', error);
     }
-  };
+  }, [token]);
 
-  const fetchPendingRequests = async () => {
+  const fetchPendingRequests = useCallback(async () => {
     try {
-      const response = await fetch('https://make-friends-backend.onrender.com/friends/pending', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/friends/pending`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await response.json();
@@ -52,11 +46,17 @@ function Home() {
     } catch (error) {
       console.error('Error fetching pending requests:', error);
     }
-  };
+  }, [token]);
+
+  useEffect(() => {
+    fetchFriends();
+    fetchRecommendations();
+    fetchPendingRequests();
+  }, [fetchFriends, fetchRecommendations, fetchPendingRequests]);
 
   const handleSearch = async () => {
     try {
-      const response = await fetch(`https://make-friends-backend.onrender.com/friends/search?username=${searchTerm}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/friends/search?username=${searchTerm}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await response.json();
@@ -69,7 +69,7 @@ function Home() {
   const debouncedSearch = useCallback(
     debounce(async (term) => {
       try {
-        const response = await fetch(`https://make-friends-backend.onrender.com/friends/search?username=${term}`, {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/friends/search?username=${term}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = await response.json();
@@ -93,7 +93,7 @@ function Home() {
 
   const sendFriendRequest = async (userId) => {
     try {
-      const response = await fetch(`https://make-friends-backend.onrender.com/friends/request/${userId}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/friends/request/${userId}`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -124,10 +124,9 @@ function Home() {
     }
   };
 
-
   const acceptFriendRequest = async (userId) => {
     try {
-      await fetch(`https://make-friends-backend.onrender.com/friends/accept/${userId}`, {
+      await fetch(`${process.env.REACT_APP_API_URL}/friends/accept/${userId}`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -140,7 +139,7 @@ function Home() {
 
   const unfriend = async (userId) => {
     try {
-      await fetch(`https://make-friends-backend.onrender.com/friends/unfriend/${userId}`, {
+      await fetch(`${process.env.REACT_APP_API_URL}/friends/unfriend/${userId}`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` }
       });
