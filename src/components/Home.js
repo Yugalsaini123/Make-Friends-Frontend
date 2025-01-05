@@ -14,7 +14,7 @@ function Home() {
 
   const fetchFriends = useCallback(async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/friends`, {
+      const response = await fetch(`https://make-friends-backend.onrender.com/friends`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await response.json();
@@ -26,7 +26,7 @@ function Home() {
 
   const fetchRecommendations = useCallback(async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/friends/recommendations`, {
+      const response = await fetch(`https://make-friends-backend.onrender.com/friends/recommendations`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await response.json();
@@ -38,7 +38,7 @@ function Home() {
 
   const fetchPendingRequests = useCallback(async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/friends/pending`, {
+      const response = await fetch(`https://make-friends-backend.onrender.com/friends/pending`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await response.json();
@@ -56,7 +56,7 @@ function Home() {
 
   // const handleSearch = async () => {
   //   try {
-  //     const response = await fetch(`${process.env.REACT_APP_API_URL}/friends/search?username=${searchTerm}`, {
+  //     const response = await fetch(`https://make-friends-backend.onrender.com/friends/search?username=${searchTerm}`, {
   //       headers: { Authorization: `Bearer ${token}` }
   //     });
   //     const data = await response.json();
@@ -69,7 +69,7 @@ function Home() {
   const debouncedSearch = useCallback(
     debounce(async (term) => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/friends/search?username=${term}`, {
+        const response = await fetch(`https://make-friends-backend.onrender.com/friends/search?username=${term}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = await response.json();
@@ -93,7 +93,7 @@ function Home() {
 
   const sendFriendRequest = async (userId) => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/friends/request/${userId}`, {
+      const response = await fetch(`https://make-friends-backend.onrender.com/friends/request/${userId}`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -126,7 +126,7 @@ function Home() {
 
   const acceptFriendRequest = async (userId) => {
     try {
-      await fetch(`${process.env.REACT_APP_API_URL}/friends/accept/${userId}`, {
+      await fetch(`https://make-friends-backend.onrender.com/friends/accept/${userId}`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -139,7 +139,7 @@ function Home() {
 
   const unfriend = async (userId) => {
     try {
-      await fetch(`${process.env.REACT_APP_API_URL}/friends/unfriend/${userId}`, {
+      await fetch(`https://make-friends-backend.onrender.com/friends/unfriend/${userId}`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -148,6 +148,7 @@ function Home() {
       console.error('Error unfriending user:', error);
     }
   };
+
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
