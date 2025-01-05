@@ -54,17 +54,17 @@ function Home() {
     fetchPendingRequests();
   }, [fetchFriends, fetchRecommendations, fetchPendingRequests]);
 
-  const handleSearch = async () => {
-    try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/friends/search?username=${searchTerm}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const data = await response.json();
-      setSearchResults(data);
-    } catch (error) {
-      console.error('Error searching users:', error);
-    }
-  };
+  // const handleSearch = async () => {
+  //   try {
+  //     const response = await fetch(`${process.env.REACT_APP_API_URL}/friends/search?username=${searchTerm}`, {
+  //       headers: { Authorization: `Bearer ${token}` }
+  //     });
+  //     const data = await response.json();
+  //     setSearchResults(data);
+  //   } catch (error) {
+  //     console.error('Error searching users:', error);
+  //   }
+  // };
 
   const debouncedSearch = useCallback(
     debounce(async (term) => {
